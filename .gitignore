@@ -9,7 +9,6 @@ chat-api/dist/
 chat-web/dist/
 
 # IDE files
-.vscode/
 .claude/
 
 # Redis data
