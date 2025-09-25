@@ -1,0 +1,52 @@
+name: podbot
+
+services:
+  redis:
+    image: redis:latest
+    container_name: podbot-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./redis:/data
+    restart: unless-stopped
+
+  agent-memory-server:
+    build: ./agent-memory-server
+    container_name: podbot-agent-memory-server
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AUTH_MODE=${AUTH_MODE:-disabled}
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  chat-api:
+    build: ./chat-api
+    container_name: podbot-chat-api
+    ports:
+      - '${PORT:-3001}:${PORT:-3001}'
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT:-3001}
+      - AMS_BASE_URL=http://agent-memory-server:8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AMS_CONTEXT_WINDOW_MAX=${AMS_CONTEXT_WINDOW_MAX}
+    depends_on:
+      - agent-memory-server
+    restart: unless-stopped
+
+  chat-web:
+    build: ./chat-web
+    container_name: podbot-chat-web
+    ports:
+      - '3000:80'
+    depends_on:
+      - chat-api
+    restart: unless-stopped

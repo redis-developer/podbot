@@ -1,0 +1,16 @@
+# Environment Variables
+.env
+
+# Node.js
+node_modules/
+
+# Build outputs
+chat-api/dist/
+chat-web/dist/
+
+# IDE files
+.vscode/
+.claude/
+
+# Redis data
+redis/dump.rdb
