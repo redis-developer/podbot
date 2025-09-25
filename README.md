@@ -10,14 +10,15 @@ git clone https://github.com/guyroyse/podbot.git
 cd podbot
 ```
 
-2. Set your OpenAI API key:
+2. Set up environment variables:
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+cp .env.example .env
+# Edit .env and add your OpenAI API key
 ```
 
 3. Start all services:
 ```bash
-docker-compose up -d
+docker-compose up
 ```
 
 ## Testing the API
