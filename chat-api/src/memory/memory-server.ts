@@ -45,6 +45,7 @@ export async function replaceWorkingMemory(workingMemory: WorkingMemory): Promis
   const payload = { ...workingMemory, context_window_max: config.amsContextWindowMax }
 
   console.log(`[AMS PUT] ${url}`)
+  console.log(`[AMS PUT] Request body:`, JSON.stringify(payload, null, 2))
 
   const bodyString = JSON.stringify(payload)
   const response = await fetch(url, {
@@ -58,7 +59,15 @@ export async function replaceWorkingMemory(workingMemory: WorkingMemory): Promis
 
   if (!response.ok) throw new Error(`Failed to replace working memory: ${response.statusText}`)
 
+  const responseData = await response.text()
   console.log(`[AMS PUT] Success - Status: ${response.status}`)
+
+  try {
+    const parsedResponse = JSON.parse(responseData)
+    console.log(`[AMS PUT] Response:`, JSON.stringify(parsedResponse, null, 2))
+  } catch {
+    console.log(`[AMS PUT] Response:`, responseData || '(empty response)')
+  }
 }
 
 /**
