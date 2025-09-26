@@ -40,34 +40,32 @@ export async function readWorkingMemory(sessionId: string, namespace: string): P
 /**
  * Replace conversation history for a session
  */
-export async function replaceWorkingMemory(workingMemory: WorkingMemory): Promise<void> {
-  const url = `${config.amsBaseUrl}/v1/working-memory/${workingMemory.session_id}`
-  const payload = { ...workingMemory, context_window_max: config.amsContextWindowMax }
+export async function replaceWorkingMemory(
+  sessionId: string,
+  context_window_max: number,
+  workingMemory: WorkingMemory
+): Promise<WorkingMemory> {
+  const url = new URL(`${config.amsBaseUrl}/v1/working-memory/${sessionId}`)
+  url.searchParams.set('context_window_max', context_window_max.toString())
 
-  console.log(`[AMS PUT] ${url}`)
-  console.log(`[AMS PUT] Request body:`, JSON.stringify(payload, null, 2))
+  console.log(`[AMS PUT] ${url.toString()}`)
 
-  const bodyString = JSON.stringify(payload)
-  const response = await fetch(url, {
+  const response = await fetch(url.toString(), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       'X-Client-Version': '0.12.0'
     },
-    body: bodyString
+    body: JSON.stringify(workingMemory)
   })
 
+  console.log(`[AMS PUT] Response Status: ${response.status}`)
   if (!response.ok) throw new Error(`Failed to replace working memory: ${response.statusText}`)
 
-  const responseData = await response.text()
-  console.log(`[AMS PUT] Success - Status: ${response.status}`)
+  const data = (await response.json()) as WorkingMemory
+  console.log(`[AMS PUT] Response:`, JSON.stringify(data, null, 2))
 
-  try {
-    const parsedResponse = JSON.parse(responseData)
-    console.log(`[AMS PUT] Response:`, JSON.stringify(parsedResponse, null, 2))
-  } catch {
-    console.log(`[AMS PUT] Response:`, responseData || '(empty response)')
-  }
+  return data
 }
 
 /**
@@ -88,6 +86,5 @@ export async function removeWorkingMemory(sessionId: string, namespace: string):
   })
 
   console.log(`[AMS DELETE] Response Status: ${response.status}`)
-
   if (!response.ok) throw new Error(`Failed to delete working memory: ${response.statusText}`)
 }

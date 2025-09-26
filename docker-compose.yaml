@@ -37,7 +37,7 @@ services:
       - PORT=${PORT:-3001}
       - AMS_BASE_URL=http://agent-memory-server:8000
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - AMS_CONTEXT_WINDOW_MAX=${AMS_CONTEXT_WINDOW_MAX}
+      - AMS_CONTEXT_WINDOW_MAX=${AMS_CONTEXT_WINDOW_MAX:-4000}
     depends_on:
       - agent-memory-server
     restart: unless-stopped

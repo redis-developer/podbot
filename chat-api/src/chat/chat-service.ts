@@ -1,5 +1,6 @@
 import { readWorkingMemory, replaceWorkingMemory, removeWorkingMemory } from '@memory/memory-server.js'
 import { generateResponse } from './agent.js'
+import { config } from '@config/config.js'
 
 export async function fetchHistory(username: string): Promise<AmsMessage[]> {
   try {
@@ -25,7 +26,7 @@ export async function processMessage(username: string, message: string): Promise
     const newMessages = [...messages, userMessage, aiMessage]
 
     // Save updated message history
-    await replaceWorkingMemory({
+    await replaceWorkingMemory(username, config.amsContextWindowMax, {
       session_id: username,
       namespace: 'chat',
       context: context,
