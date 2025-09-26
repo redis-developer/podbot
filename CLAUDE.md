@@ -4,10 +4,11 @@
 Built a TypeScript-based chat API that integrates with Redis Agent Memory Server (AMS) to create PodcastBot - a specialized chatbot that provides podcast recommendations and discusses podcast-related topics.
 
 ## Architecture
+- **Frontend**: Vite + TypeScript SPA with nginx reverse proxy
 - **Backend**: Node.js with Express and TypeScript
 - **Memory**: Redis Agent Memory Server (AMS) for persistent conversation history
 - **LLM**: OpenAI GPT-4o-mini via LangChain
-- **Deployment**: Docker Compose with Redis, AMS, and Chat API services
+- **Deployment**: Docker Compose with Redis, AMS, Chat API, and Web UI services
 
 ## API Endpoints
 - `GET /sessions/:username` - Retrieve conversation history
@@ -16,16 +17,18 @@ Built a TypeScript-based chat API that integrates with Redis Agent Memory Server
 - `GET /health` - Health check endpoint
 
 ## Key Features
-- Persistent conversation memory across sessions
-- PodcastBot persona that only discusses podcasts
-- RESTful API design
-- Docker containerization
-- TypeScript with ES modules
-- Path aliases for clean imports
+- **Frontend Web Interface**: Modern responsive chat UI with markdown support
+- **Persistent Memory**: Conversation history across sessions via AMS
+- **PodcastBot Persona**: Specialized chatbot that only discusses podcasts
+- **RESTful API**: Clean backend architecture
+- **Full Stack TypeScript**: End-to-end type safety
+- **Docker Deployment**: Containerized microservices architecture
+- **Real-time Chat**: Instant messaging with loading states
+- **Session Management**: Load, clear, and manage user conversations
 
 ## Project Structure
 ```
-chat-api/
+chat-api/                      # Backend API service
 ├── src/
 │   ├── chat/
 │   │   ├── chat-routes.ts     # Express routes
@@ -42,6 +45,20 @@ chat-api/
 ├── Dockerfile
 ├── package.json
 └── tsconfig.json
+
+chat-web/                      # Frontend web interface
+├── src/
+│   ├── main.ts                # Application entry point
+│   ├── api.ts                 # API client for chat-api
+│   ├── types.ts               # TypeScript type definitions
+│   └── style.css              # Application styles
+├── public/                    # Static assets
+├── dist/                      # Built assets (generated)
+├── Dockerfile                 # Multi-stage build with nginx
+├── nginx.conf                 # Nginx proxy configuration
+├── index.html                 # HTML template
+├── package.json
+└── tsconfig.json
 ```
 
 ## Environment Variables
@@ -54,9 +71,17 @@ chat-api/
 - `redis` - Redis database (port 6379)
 - `agent-memory-server` - AMS service (port 8000)
 - `chat-api` - Chat API service (port 3001)
+- `chat-web` - Frontend web interface (port 3000)
 
-## Testing
-Use curl to test the API:
+## Usage
+### Web Interface
+1. Open http://localhost:3000 in your browser
+2. Enter a username and click "Load" to load existing conversations
+3. Type messages about podcasts and get AI-powered recommendations
+4. Use "Clear" to delete conversation history
+
+### API Testing
+Use curl to test the backend API directly:
 
 ```bash
 # Start conversation
@@ -72,29 +97,57 @@ curl -X DELETE http://localhost:3001/sessions/username
 ```
 
 ## Key Implementation Details
+
+### Backend (chat-api)
 - Uses `context_window_max` parameter in both GET (query param) and PUT (request body) calls to AMS
 - Converts between AMS message format and LangChain message classes
 - Global TypeScript types for consistent message handling
 - Error handling for all AMS operations
 - Health check endpoint for container monitoring
 
+### Frontend (chat-web)
+- **Vite Build System**: Fast development and optimized production builds
+- **TypeScript**: Full type safety with shared types between frontend/backend
+- **Nginx Reverse Proxy**: Routes API calls to backend, serves static assets
+- **Markdown Rendering**: Bot responses rendered with marked.js
+- **Local Storage**: Persistent username across browser sessions
+- **Error Handling**: User-friendly error messages with API error details
+- **Loading States**: Visual feedback during API operations
+- **FontAwesome Icons**: Modern iconography throughout the interface
+
 ## Development Commands
+
+### Backend (chat-api)
 ```bash
+cd chat-api
 npm run build    # Build TypeScript
 npm run dev      # Development server
 npm run start    # Production server
 ```
 
+### Frontend (chat-web)
+```bash
+cd chat-web
+npm run dev      # Vite development server (port 5173)
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
+
 ## Docker Commands
 ```bash
-docker-compose up -d          # Start all services
-docker-compose build chat-api # Rebuild chat API
-docker-compose logs chat-api  # View logs
+docker-compose up -d              # Start all services
+docker-compose build chat-api     # Rebuild chat API
+docker-compose build chat-web     # Rebuild frontend
+docker-compose logs chat-api      # View API logs
+docker-compose logs chat-web      # View web logs
+docker-compose logs agent-memory-server  # View AMS logs
 ```
 
 ## Future Enhancements
-- Frontend web interface
-- User authentication
-- Multiple bot personas
-- Conversation analytics
-- Export conversation history
+- **User Authentication**: Secure login system with protected sessions
+- **Multiple Bot Personas**: Different AI assistants for various topics
+- **Conversation Analytics**: Usage metrics and conversation insights
+- **Export Functionality**: Download conversation history in various formats
+- **Real-time Updates**: WebSocket support for live messaging
+- **Dark Mode**: Theme switching for better user experience
+- **Mobile Optimization**: Enhanced responsive design for mobile devices
