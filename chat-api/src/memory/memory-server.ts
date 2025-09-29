@@ -21,12 +21,7 @@ export async function readWorkingMemory(sessionId: string, namespace: string): P
     if (response.status === 404) {
       // Return empty session for new users
       console.log(`[AMS GET] Session not found, returning empty session`)
-      return {
-        session_id: sessionId,
-        namespace: namespace,
-        context: '',
-        messages: []
-      }
+      return { session_id: sessionId, namespace: namespace, context: '', messages: [] }
     }
     throw new Error(`Failed to get working memory: ${response.statusText}`)
   }
