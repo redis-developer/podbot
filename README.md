@@ -70,12 +70,6 @@ graph LR
     B --> C[Agent Memory Server<br/>Python + FastAPI]
     C --> D[Redis<br/>Database]
     B --> E[OpenAI<br/>GPT-4o-mini]
-
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#ffebee
-    style E fill:#e8f5e8
 ```
 
 ## Key Features
