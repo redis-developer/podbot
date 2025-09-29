@@ -1,14 +1,13 @@
-// API Message types (matching backend)
-export interface AmsMessage {
-  role: 'user' | 'assistant';
-  content: string;
+// API Message types (matching backend chat domain)
+export enum ChatRole {
+  SUMMARY = 'summary',
+  USER = 'user',
+  PODBOT = 'podbot'
 }
 
-export interface WorkingMemory {
-  session_id: string;
-  namespace: string;
-  context: string;
-  messages: AmsMessage[];
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
 }
 
 // API Request/Response types
@@ -18,17 +17,14 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   response: string;
-  memory: WorkingMemory;
 }
 
-export interface SessionHistoryResponse {
-  messages: AmsMessage[];
-}
+export type SessionHistoryResponse = ChatMessage[];
 
 // Frontend UI state types
 export interface AppState {
   username: string;
-  messages: AmsMessage[];
+  messages: ChatMessage[];
   isLoading: boolean;
   error: string | null;
 }

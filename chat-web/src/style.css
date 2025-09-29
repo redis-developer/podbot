@@ -205,6 +205,16 @@ footer {
   color: var(--color-bot-message);
 }
 
+.summary-message .username {
+  color: var(--color-system-message);
+}
+
+.summary-message {
+  opacity: 0.8;
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
 /* Markdown styling in bot messages */
 .bot-message h1, .bot-message h2, .bot-message h3, .bot-message h4, .bot-message h5, .bot-message h6 {
   margin: 12px 0 6px 0;

@@ -1,6 +1,6 @@
 import dedent from 'dedent'
 import { ChatOpenAI } from '@langchain/openai'
-import { SystemMessage, HumanMessage, BaseMessage, AIMessage } from '@langchain/core/messages'
+import { SystemMessage, HumanMessage, BaseMessage, AIMessage, AIMessageChunk } from '@langchain/core/messages'
 
 import { config } from '@config/config.js'
 
@@ -27,25 +27,13 @@ const llm = new ChatOpenAI({
   temperature: 0.7
 })
 
-export async function generateResponse(
-  context: string,
-  messages: AmsMessage[],
-  userMessage: AmsMessage
-): Promise<string> {
-  const llmMessages = buildLlmMessages(context, messages, userMessage)
-  const response = await llm.invoke(llmMessages)
-  return response.content as string
-}
-
-function buildLlmMessages(context: string, messages: AmsMessage[], userMessage: AmsMessage): BaseMessage[] {
+export async function generateResponse(messages: BaseMessage[]): Promise<AIMessage> {
+  // a basic system prompt
   const systemPrompt = new SystemMessage(SYSTEM_PROMPT)
-  const contextMessage = context ? new SystemMessage(`Previous conversation context: ${context}`) : null
-  const chatHistory = convertToLlmMessages(messages)
-  const humanMessage = new HumanMessage(userMessage.content)
 
-  return [systemPrompt, ...(contextMessage ? [contextMessage] : []), ...chatHistory, humanMessage]
-}
+  // call the LLM
+  const response = await llm.invoke([systemPrompt, ...messages])
 
-function convertToLlmMessages(messages: AmsMessage[]): BaseMessage[] {
-  return messages.map(msg => (msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content)))
+  // return the AI message
+  return new AIMessage(response.text)
 }

@@ -1,4 +1,4 @@
-import type { ChatRequest, ChatResponse, SessionHistoryResponse, AmsMessage } from './types';
+import type { ChatRequest, ChatResponse, SessionHistoryResponse } from './types';
 
 const API_BASE_URL = '';
 
@@ -40,9 +40,9 @@ async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<T
 
 export const chatApi = {
   // Get conversation history for a user
-  async getSessionHistory(username: string): Promise<AmsMessage[]> {
+  async getSessionHistory(username: string): Promise<SessionHistoryResponse> {
     const response = await apiRequest<SessionHistoryResponse>(`/sessions/${username}`);
-    return response.messages || [];
+    return response;
   },
 
   // Send a message and get bot response

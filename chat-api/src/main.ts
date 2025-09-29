@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 
-import routes from '@chat/chat-routes.js'
+import routes from '@/routes/chat-routes.js'
 import { config } from '@config/config.js'
 
 const app = express()

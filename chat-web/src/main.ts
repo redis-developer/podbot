@@ -1,6 +1,7 @@
 import './style.css';
 import { chatApi, ApiError } from './api';
-import type { AppState, AmsMessage } from './types';
+import type { AppState, ChatMessage } from './types';
+import { ChatRole } from './types';
 import { marked } from 'marked';
 
 // Application state
@@ -41,16 +42,31 @@ function showError(message: string): void {
 }
 
 
-function displayMessage(message: AmsMessage): void {
+function displayMessage(message: ChatMessage): void {
   const messageLi = document.createElement('li');
-  messageLi.className = `message ${message.role === 'user' ? 'user-message' : 'bot-message'}`;
 
-  if (message.role === 'user') {
+  // Set CSS class based on role
+  switch (message.role) {
+    case ChatRole.USER:
+      messageLi.className = 'message user-message';
+      break;
+    case ChatRole.PODBOT:
+      messageLi.className = 'message bot-message';
+      break;
+    case ChatRole.SUMMARY:
+      messageLi.className = 'message summary-message';
+      break;
+  }
+
+  // Set content based on role
+  if (message.role === ChatRole.USER) {
     const username = usernameInput.value.trim() || 'you';
     messageLi.innerHTML = `<span class="username">${username}></span> ${message.content}`;
-  } else {
+  } else if (message.role === ChatRole.PODBOT) {
     const renderedContent = marked.parse(message.content);
     messageLi.innerHTML = `<span class="username">PodBot></span> ${renderedContent}`;
+  } else if (message.role === ChatRole.SUMMARY) {
+    messageLi.innerHTML = `<span class="username">Context></span> <em>${message.content}</em>`;
   }
 
   messageHistory.appendChild(messageLi);
@@ -99,11 +115,11 @@ async function handleLoadSession(): Promise<void> {
   setLoading(true);
 
   try {
-    const messages = await chatApi.getSessionHistory(username);
-    state.messages = messages;
+    const sessionHistory = await chatApi.getSessionHistory(username);
+    state.messages = sessionHistory;
 
     clearMessages();
-    messages.forEach(displayMessage);
+    sessionHistory.forEach(displayMessage);
   } catch (error) {
     if (error instanceof ApiError) {
       showError(`Failed to load session: ${error.message}`);
@@ -162,14 +178,14 @@ async function handleSendMessage(): Promise<void> {
   setLoading(true);
 
   // Display user message
-  const userMessage: AmsMessage = { role: 'user', content: message };
+  const userMessage: ChatMessage = { role: ChatRole.USER, content: message };
   displayMessage(userMessage);
 
   try {
     const response = await chatApi.sendMessage(username, message);
 
     // Display bot response
-    const botMessage: AmsMessage = { role: 'assistant', content: response.response };
+    const botMessage: ChatMessage = { role: ChatRole.PODBOT, content: response.response };
     displayMessage(botMessage);
 
     // Update state

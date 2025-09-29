@@ -1,9 +1,26 @@
 import { config } from '@config/config.js'
 
+export enum AmsRole {
+  USER = 'user',
+  ASSISTANT = 'assistant'
+}
+
+export type AmsMessage = {
+  role: AmsRole
+  content: string
+}
+
+export type AmsMemory = {
+  session_id: string
+  namespace: string
+  context: string
+  messages: AmsMessage[]
+}
+
 /**
  * Retrieve conversation history for a session
  */
-export async function readWorkingMemory(sessionId: string, namespace: string): Promise<WorkingMemory> {
+export async function readWorkingMemory(sessionId: string, namespace: string): Promise<AmsMemory> {
   const url = new URL(`/v1/working-memory/${sessionId}`, config.amsBaseUrl)
   url.searchParams.set('namespace', namespace)
 
@@ -26,7 +43,7 @@ export async function readWorkingMemory(sessionId: string, namespace: string): P
     throw new Error(`Failed to get working memory: ${response.statusText}`)
   }
 
-  const data = (await response.json()) as WorkingMemory
+  const data = (await response.json()) as AmsMemory
   console.log(`[AMS GET] Response:`, JSON.stringify(data, null, 2))
 
   return data
@@ -38,8 +55,8 @@ export async function readWorkingMemory(sessionId: string, namespace: string): P
 export async function replaceWorkingMemory(
   sessionId: string,
   context_window_max: number,
-  workingMemory: WorkingMemory
-): Promise<WorkingMemory> {
+  amsMemory: AmsMemory
+): Promise<AmsMemory> {
   const url = new URL(`${config.amsBaseUrl}/v1/working-memory/${sessionId}`)
   url.searchParams.set('context_window_max', context_window_max.toString())
 
@@ -51,13 +68,13 @@ export async function replaceWorkingMemory(
       'Content-Type': 'application/json',
       'X-Client-Version': '0.12.0'
     },
-    body: JSON.stringify(workingMemory)
+    body: JSON.stringify(amsMemory)
   })
 
   console.log(`[AMS PUT] Response Status: ${response.status}`)
   if (!response.ok) throw new Error(`Failed to replace working memory: ${response.statusText}`)
 
-  const data = (await response.json()) as WorkingMemory
+  const data = (await response.json()) as AmsMemory
   console.log(`[AMS PUT] Response:`, JSON.stringify(data, null, 2))
 
   return data

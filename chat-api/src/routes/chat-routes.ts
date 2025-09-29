@@ -1,13 +1,13 @@
 import { Router } from 'express'
-import { fetchHistory, processMessage, clearSession } from './chat-service.js'
+import { fetchHistory, processMessage, clearSession, ChatMessage } from '../services/chat-service.js'
 
 const router = Router()
 
 router.get('/sessions/:username', async (req, res) => {
   try {
     const { username } = req.params
-    const messages = await fetchHistory(username)
-    res.json({ messages })
+    const chatHistory: ChatMessage[] = await fetchHistory(username)
+    res.json(chatHistory)
   } catch (error) {
     console.error('Error getting session:', error)
     res.status(500).json({ error: 'Failed to get session' })
