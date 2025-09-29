@@ -1,7 +1,7 @@
-# PodcastBot - Chat API with Redis Agent Memory Server
+# PodBot - Chat API with Redis Agent Memory Server
 
 ## Overview
-Built a TypeScript-based chat API that integrates with Redis Agent Memory Server (AMS) to create PodcastBot - a specialized chatbot that provides podcast recommendations and discusses podcast-related topics.
+Built a TypeScript-based chat API that integrates with Redis Agent Memory Server (AMS) to create PodBot - a specialized chatbot that provides podcast recommendations and discusses podcast-related topics.
 
 ## Architecture
 - **Frontend**: Vite + TypeScript SPA with nginx reverse proxy
@@ -19,7 +19,7 @@ Built a TypeScript-based chat API that integrates with Redis Agent Memory Server
 ## Key Features
 - **Frontend Web Interface**: Modern responsive chat UI with markdown support
 - **Persistent Memory**: Conversation history across sessions via AMS
-- **PodcastBot Persona**: Specialized chatbot that only discusses podcasts
+- **PodBot Persona**: Specialized chatbot that only discusses podcasts
 - **RESTful API**: Clean backend architecture
 - **Full Stack TypeScript**: End-to-end type safety
 - **Docker Deployment**: Containerized microservices architecture
@@ -33,7 +33,7 @@ chat-api/                      # Backend API service
 │   ├── chat/
 │   │   ├── chat-routes.ts     # Express routes
 │   │   ├── chat-service.ts    # Business logic
-│   │   └── agent.ts           # PodcastBot LLM agent
+│   │   └── agent.ts           # PodBot LLM agent
 │   ├── memory/
 │   │   └── memory-server.ts   # AMS client functions
 │   ├── config/
