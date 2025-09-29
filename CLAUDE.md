@@ -30,17 +30,15 @@ Built a TypeScript-based chat API that integrates with Redis Agent Memory Server
 ```
 chat-api/                      # Backend API service
 ├── src/
-│   ├── chat/
-│   │   ├── chat-routes.ts     # Express routes
-│   │   ├── chat-service.ts    # Business logic
-│   │   └── agent.ts           # PodBot LLM agent
-│   ├── memory/
+│   ├── adapters/
+│   │   ├── agent-adapter.ts   # PodBot LLM agent
 │   │   └── memory-server.ts   # AMS client functions
 │   ├── config/
 │   │   └── config.ts          # Environment configuration
-│   ├── utils/
-│   │   └── message-utils.ts   # Message type conversions
-│   ├── types.d.ts             # Global type definitions
+│   ├── routes/
+│   │   └── chat-routes.ts     # Express routes
+│   ├── services/
+│   │   └── chat-service.ts    # Business logic
 │   └── main.ts                # Express server
 ├── Dockerfile
 ├── package.json
@@ -59,12 +57,15 @@ chat-web/                      # Frontend web interface
 ├── index.html                 # HTML template
 ├── package.json
 └── tsconfig.json
+
+agent-memory-server/           # AMS Docker build
+└── Dockerfile                 # Builds AMS from GitHub
 ```
 
 ## Environment Variables
 - `OPENAI_API_KEY` - OpenAI API key
 - `AMS_BASE_URL` - Agent Memory Server URL (default: http://localhost:8000)
-- `AMS_CONTEXT_WINDOW_MAX` - Token limit for context window (500 for testing)
+- `AMS_CONTEXT_WINDOW_MAX` - Token limit for context window (default: 4000)
 - `PORT` - Server port (default: 3001)
 
 ## Docker Services
@@ -99,21 +100,23 @@ curl -X DELETE http://localhost:3001/sessions/username
 ## Key Implementation Details
 
 ### Backend (chat-api)
-- Uses `context_window_max` parameter in both GET (query param) and PUT (request body) calls to AMS
-- Converts between AMS message format and LangChain message classes
-- Global TypeScript types for consistent message handling
-- Error handling for all AMS operations
-- Health check endpoint for container monitoring
+- **Architecture**: Clean separation with adapters, services, routes, and config layers
+- **AMS Integration**: Uses `context_window_max` parameter in AMS calls for memory management
+- **Message Conversion**: Converts between AMS message format and LangChain message classes
+- **Type Safety**: TypeScript types for consistent message handling across the application
+- **Error Handling**: Comprehensive error handling for all AMS operations and API endpoints
+- **Health Monitoring**: Health check endpoint for container monitoring and service discovery
 
 ### Frontend (chat-web)
 - **Vite Build System**: Fast development and optimized production builds
-- **TypeScript**: Full type safety with shared types between frontend/backend
-- **Nginx Reverse Proxy**: Routes API calls to backend, serves static assets
-- **Markdown Rendering**: Bot responses rendered with marked.js
-- **Local Storage**: Persistent username across browser sessions
-- **Error Handling**: User-friendly error messages with API error details
-- **Loading States**: Visual feedback during API operations
+- **TypeScript**: Full type safety with consistent message types across frontend/backend
+- **Nginx Reverse Proxy**: Routes API calls to backend, serves static assets efficiently
+- **Markdown Rendering**: Bot responses rendered with marked.js for rich text display
+- **Local Storage**: Persistent username across browser sessions for better UX
+- **Error Handling**: User-friendly error messages with detailed API error information
+- **Loading States**: Visual feedback during API operations with disabled UI elements
 - **FontAwesome Icons**: Modern iconography throughout the interface
+- **Responsive Design**: Clean, modern UI that works across different screen sizes
 
 ## Development Commands
 
@@ -135,12 +138,14 @@ npm run preview  # Preview production build
 
 ## Docker Commands
 ```bash
-docker-compose up -d              # Start all services
-docker-compose build chat-api     # Rebuild chat API
-docker-compose build chat-web     # Rebuild frontend
-docker-compose logs chat-api      # View API logs
-docker-compose logs chat-web      # View web logs
-docker-compose logs agent-memory-server  # View AMS logs
+docker-compose up -d                          # Start all services
+docker-compose build chat-api                 # Rebuild chat API
+docker-compose build chat-web                 # Rebuild frontend
+docker-compose build agent-memory-server      # Rebuild AMS
+docker-compose logs chat-api                  # View API logs
+docker-compose logs chat-web                  # View web logs
+docker-compose logs agent-memory-server       # View AMS logs
+docker-compose logs redis                     # View Redis logs
 ```
 
 ## Future Enhancements

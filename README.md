@@ -1,164 +1,165 @@
-# PodBot - Chat API with Redis Agent Memory Server
+# PodBot - AI Podcast Recommendation Chat
 
-A TypeScript-based chat API that integrates with Redis Agent Memory Server (AMS)
-to create PodBot - a specialized chatbot that provides podcast recommendations
-and discusses podcast-related topics.
+PodBot is a specialized AI chatbot that provides personalized podcast recommendations and discusses all things podcasting. Built with modern web technologies and powered by OpenAI, it maintains conversation context across sessions using Redis Agent Memory Server.
 
 ## Quick Start
 
-1. Clone the repository:
+1. **Clone this repo**:
 
-```bash
-git clone https://github.com/guyroyse/podbot.git
-cd podbot
-```
-
-2. Set up environment variables:
+2. **Set up a .env file**:
 
 ```bash
 cp .env.example .env
-# Edit .env and add your OpenAI API key
 ```
 
-3. Start all services:
+3. **Add your OpenAI API key** to `.env`:
+
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+4. **Start all services**:
 
 ```bash
 docker-compose up
 ```
 
-4. Access the web interface at http://localhost:3000
+5. **Open your browser** to [http://localhost:3000](http://localhost:3000)
+
+That's it! Enter a username and start chatting with PodBot about podcasts.
+
+## How to Use
+
+1. **Enter a username** and click "Load" to start or resume a conversation
+2. **Ask about podcasts** - anything from recommendations to industry discussion
+3. **Get AI-powered responses** with personalized suggestions based on your conversation history
+4. **Clear your session** anytime to start fresh
 
 ## Architecture
 
-- **Frontend**: Vite + TypeScript SPA with nginx reverse proxy
-- **Backend**: Node.js with Express and TypeScript
-- **Memory**: Redis Agent Memory Server (AMS) for persistent conversation history
-- **LLM**: OpenAI GPT-4o-mini via LangChain
-- **Deployment**: Docker Compose with Redis, AMS, Chat API, and Web UI services
+PodBot is built as a microservices architecture with four main components:
+
+### **Web Frontend**
+
+- **[Vite](https://vitejs.dev/)** + **[TypeScript](https://www.typescriptlang.org/)** for fast development and type safety
+- **[Nginx](https://nginx.org/)** reverse proxy for efficient static serving and API routing
+- **[Marked.js](https://marked.js.org/)** for markdown rendering of bot responses
+- **[FontAwesome](https://fontawesome.com/)** for modern UI icons
+
+### **Chat API Backend**
+
+- **[Node.js](https://nodejs.org/)** + **[Express](https://expressjs.com/)** for the web server
+- **[TypeScript](https://www.typescriptlang.org/)** for end-to-end type safety
+- **[LangChain](https://js.langchain.com/)** for LLM integration and message handling
+- Clean architecture with adapters, services, and routes
+
+### **AI & Memory**
+
+- **[OpenAI GPT-4o-mini](https://openai.com/)** via LangChain for intelligent responses
+- **[Redis Agent Memory Server (AMS)](https://github.com/redis/agent-memory-server)** for persistent conversation context
+- Smart context window management for efficient token usage
+
+### **Data Storage**
+
+- **[Redis](https://redis.io/)** database for session storage and caching
+- **[Docker Compose](https://docs.docker.com/compose/)** for orchestrating all services
+
+```mermaid
+graph LR
+    A[Web UI<br/>Vite + TypeScript] --> B[Chat API<br/>Express + Node.js]
+    B --> C[Agent Memory Server<br/>Python + FastAPI]
+    C --> D[Redis<br/>Database]
+    B --> E[OpenAI<br/>GPT-4o-mini]
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#fff3e0
+    style D fill:#ffebee
+    style E fill:#e8f5e8
+```
 
 ## Key Features
 
-- **Frontend Web Interface**: Modern responsive chat UI with markdown support
-- **Persistent Memory**: Conversation history across sessions via AMS
-- **PodBot Persona**: Specialized chatbot that only discusses podcasts
-- **RESTful API**: Clean backend architecture
-- **Full Stack TypeScript**: End-to-end type safety
-- **Docker Deployment**: Containerized microservices architecture
-- **Real-time Chat**: Instant messaging with loading states
-- **Session Management**: Load, clear, and manage user conversations
+- **Podcast-Focused AI**: Specialized chatbot that only discusses podcasts and recommendations
+- **Persistent Memory**: Conversation history maintained across sessions
+- **Modern UI**: Responsive chat interface with markdown support and loading states
+- **Type Safety**: Full-stack TypeScript for reliable development
+- **Container Ready**: Complete Docker setup for easy deployment
+- **Fast Performance**: Vite for lightning-fast development and optimized builds
 
-## API Endpoints
-
-- `GET /sessions/:username` - Retrieve conversation history
-- `POST /sessions/:username` - Send message and get response
-- `DELETE /sessions/:username` - Clear conversation history
-- `GET /health` - Health check endpoint
-
-## Project Structure
-
-```
-chat-api/                      # Backend API service
-├── src/
-│   ├── chat/
-│   │   ├── chat-routes.ts     # Express routes
-│   │   ├── chat-service.ts    # Business logic
-│   │   └── agent.ts           # PodBot LLM agent
-│   ├── memory/
-│   │   └── memory-server.ts   # AMS client functions
-│   ├── config/
-│   │   └── config.ts          # Environment configuration
-│   ├── utils/
-│   │   └── message-utils.ts   # Message type conversions
-│   ├── types.d.ts             # Global type definitions
-│   └── main.ts                # Express server
-├── Dockerfile
-├── package.json
-└── tsconfig.json
-
-chat-web/                      # Frontend web interface
-├── src/
-│   ├── main.ts                # Application entry point
-│   ├── api.ts                 # API client for chat-api
-│   ├── types.ts               # TypeScript type definitions
-│   └── style.css              # Application styles
-├── public/                    # Static assets
-├── dist/                      # Built assets (generated)
-├── Dockerfile                 # Multi-stage build with nginx
-├── nginx.conf                 # Nginx proxy configuration
-├── index.html                 # HTML template
-├── package.json
-└── tsconfig.json
-```
-
-## Docker Services
-
-- `redis` - Redis database (port 6379)
-- `agent-memory-server` - AMS service (port 8000)
-- `chat-api` - Chat API service (port 3001)
-- `chat-web` - Frontend web interface (port 3000)
-
-## Usage
-
-### Web Interface
-
-1. Open http://localhost:3000 in your browser
-2. Enter a username and click "Load" to load existing conversations
-3. Type messages about podcasts and get AI-powered recommendations
-4. Use "Clear" to delete conversation history
+## Development & Testing
 
 ### API Testing
 
-Use curl to test the backend API directly:
+Test the backend directly with curl:
 
 ```bash
-# Start conversation
-curl -X POST http://localhost:3001/sessions/username \
+# Send a message
+curl -X POST http://localhost:3001/sessions/testuser \
   -H "Content-Type: application/json" \
-  -d '{"message": "Recommend some history podcasts"}'
+  -d '{"message": "Recommend some true crime podcasts"}'
 
 # Get conversation history
-curl -X GET http://localhost:3001/sessions/username
+curl -X GET http://localhost:3001/sessions/testuser
 
 # Clear conversation
-curl -X DELETE http://localhost:3001/sessions/username
+curl -X DELETE http://localhost:3001/sessions/testuser
 ```
 
-## Development
-
-### Backend (chat-api)
+### Local Development
 
 ```bash
-cd chat-api
-npm install
-npm run build    # Build TypeScript
-npm run dev      # Development server
-npm run start    # Production server
+# Backend development
+cd chat-api && npm run dev
+
+# Frontend development
+cd chat-web && npm run dev
+
+# View logs
+docker-compose logs -f chat-api
+docker-compose logs -f agent-memory-server
 ```
 
-### Frontend (chat-web)
+## Configuration
+
+### Required Environment Variables
+
+- `OPENAI_API_KEY` - Your OpenAI API key ([get one here](https://platform.openai.com/api-keys))
+
+### Optional Environment Variables
+
+- `AMS_CONTEXT_WINDOW_MAX` - Token limit for context window (default: 4000)
+- `PORT` - Chat API server port (default: 3001)
+- `AUTH_MODE` - AMS authentication mode (default: disabled)
+- `LOG_LEVEL` - AMS logging level (default: DEBUG)
+
+## Docker Services
+
+The application runs as four containerized services:
+
+| Service                 | Port | Description                                  |
+| ----------------------- | ---- | -------------------------------------------- |
+| **chat-web**            | 3000 | Frontend web interface (Nginx + Vite build)  |
+| **chat-api**            | 3001 | Backend API server (Node.js + Express)       |
+| **agent-memory-server** | 8000 | Memory management service (Python + FastAPI) |
+| **redis**               | 6379 | Database for session storage                 |
+
+## Useful Commands
 
 ```bash
-cd chat-web
-npm install
-npm run dev      # Vite development server (port 5173)
-npm run build    # Build for production
-npm run preview  # Preview production build
+# Rebuild and restart services
+docker-compose up --build
+
+# Run in background
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# View all logs
+docker-compose logs -f
 ```
 
-## Docker Commands
+---
 
-```bash
-docker-compose up              # Start all services
-docker-compose build chat-api  # Rebuild chat API
-docker-compose build chat-web  # Rebuild frontend
-docker-compose logs chat-api   # View API logs
-docker-compose logs chat-web   # View web logs
-docker-compose logs agent-memory-server  # View AMS logs
-```
-
-## Environment Variables
-
-- `OPENAI_API_KEY` - OpenAI API key (required)
-- `AMS_BASE_URL` - Agent Memory Server URL (default: http://localhost:8000)
-- `AMS_CONTEXT_WINDOW_MAX` - Token limit for context window (default: 500)
-- `PORT` - Server port (default: 3001)
+_For detailed implementation information, see [CLAUDE.md](./CLAUDE.md)_
