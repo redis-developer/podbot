@@ -34,14 +34,13 @@ export async function readWorkingMemory(sessionId: string, namespace: string): P
     }
   })
 
-  if (!response.ok) {
-    if (response.status === 404) {
-      // Return empty session for new users
-      console.log(`[AMS GET] Session not found, returning empty session`)
-      return { session_id: sessionId, namespace: namespace, context: '', messages: [] }
-    }
-    throw new Error(`Failed to get working memory: ${response.statusText}`)
+  // Return empty session for new users
+  if (response.status === 404) {
+    console.log(`[AMS GET] Session not found, returning empty session`)
+    return { session_id: sessionId, namespace: namespace, context: '', messages: [] }
   }
+
+  if (!response.ok) throw new Error(`Failed to get working memory: ${response.statusText}`)
 
   const data = (await response.json()) as AmsMemory
   console.log(`[AMS GET] Response:`, JSON.stringify(data, null, 2))
