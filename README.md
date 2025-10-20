@@ -21,7 +21,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 4. **Start all services**:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 5. **Open your browser** to [http://localhost:3000](http://localhost:3000)
@@ -66,10 +66,11 @@ PodBot is built as a microservices architecture with four main components:
 
 ```mermaid
 graph LR
-    A[Web UI<br/>Vite + TypeScript] --> B[Chat API<br/>Express + Node.js]
+    A[Web UI<br/>Vite + TypeScript] --> B[Chat API<br/>Express + LangChain.js]
     B --> C[Agent Memory Server<br/>Python + FastAPI]
     C --> D[Redis<br/>Database]
-    B --> E[OpenAI<br/>GPT-4o-mini]
+    B --> E[OpenAI<br/>GPT-4o models]
+    C --> E
 ```
 
 ## Key Features
@@ -110,8 +111,8 @@ cd chat-api && npm run dev
 cd chat-web && npm run dev
 
 # View logs
-docker-compose logs -f chat-api
-docker-compose logs -f agent-memory-server
+docker compose logs -f chat-api
+docker compose logs -f agent-memory-server
 ```
 
 ## Configuration
@@ -142,16 +143,16 @@ The application runs as four containerized services:
 
 ```bash
 # Rebuild and restart services
-docker-compose up --build
+docker compose up --build
 
 # Run in background
-docker-compose up -d
+docker compose up -d
 
 # Stop all services
-docker-compose down
+docker compose down
 
 # View all logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ---
