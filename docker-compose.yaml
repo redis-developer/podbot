@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   agent-memory-server:
-    build: ./agent-memory-server
+    image: redislabs/agent-memory-server:latest
     container_name: podbot-agent-memory-server
     ports:
       - '8000:8000'
